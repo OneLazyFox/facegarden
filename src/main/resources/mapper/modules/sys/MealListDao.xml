@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.facegarden.modules.diancan.dao.MealListDao">
+
+	<sql id="MealListColumns">
+    	a.id,
+    	a.list_name as 'listName',
+    	a.meal_no as 'mealNo',
+    	a.show_date as 'showDate',
+    	a.create_date 
+    </sql>
+
+	<select id="get" resultType="MealList">
+		SELECT 
+			<include refid="MealListColumns"/> 
+		FROM meal_list a
+	    WHERE id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MealList">
+		SELECT 
+			<include refid="MealListColumns"/>
+		FROM meal_list a
+		WHERE 1=1
+		<if test="beginDate!=null and endDate!=null">
+		and a.create_date BETWEEN #{beginDate} AND #{endDate}
+		</if>
+		<if test="listName != null and listName != ''">
+			AND list_name LIKE 
+			<if test="dbName == 'oracle'">'%'||#{listName}||'%'</if>
+			<if test="dbName == 'mysql'">CONCAT('%', #{listName}, '%')</if>
+		</if>
+		ORDER BY  a.create_date DESC , a.meal_no ASC
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO meal_list(
+		    id,
+			list_name,
+			meal_no, 
+			show_date, 
+			create_date
+		) VALUES (
+		    #{id},
+			#{listName}, 
+			#{mealNo}, 
+			date_format(now(),'%Y-%d-%m'), 
+			#{createDate}
+		)
+	</insert>
+	
+	<update id="delete">
+		delete from meal_list  
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

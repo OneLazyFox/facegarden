@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.facegarden.modules.diancan.dao.MealUserDao">
+
+	<sql id="mealUsercolums">
+		a.id,
+		a.user_name as 'userName',
+		a.account,
+		a.type,
+		a.del_flag,
+		a.create_date
+	</sql>
+
+	<!-- 查询id的全部用户 -->
+	<select id="get" resultType="MealUser">
+		SELECT 
+		  <include refid="mealUsercolums"/>
+		FROM meal_user a
+		WHERE id = #{id}
+	</select>
+	
+	<!-- 模糊查询 -->
+	<select id="findList" resultType="MealUser">
+		SELECT 
+			<include refid="mealUsercolums"/> 
+		FROM meal_user a
+		WHERE del_flag = #{DEL_FLAG_NORMAL} 
+		<if test="id != null and id != ''">
+		   AND id = #{id}
+		</if>
+		<if test="userName != null and userName != ''">
+			AND user_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{userName}||'%'</if>
+					<if test="dbName == 'mysql'">CONCAT('%', #{userName}, '%')</if>
+		</if>
+		ORDER BY user_name DESC
+	</select>
+	
+	<!-- 插入数据 -->
+	<insert id="insert">
+		INSERT INTO meal_user(
+			id,
+			user_name,
+			account,
+			type,
+			del_flag,
+			create_date
+		) VALUES (
+			#{id}, 
+			#{userName}, 
+			#{account}, 
+			#{type}, 
+			#{delFlag}, 
+			#{createDate}
+		)
+	</insert>
+	
+	<!-- 更新数据 -->
+	<update id="update">
+		UPDATE meal_user SET 
+			id = #{id},
+			user_name = #{userName},
+			account = #{account}, 
+			type = #{type},
+			del_flag =#{delFlag},
+			create_date = #{createDate}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除数据 -->
+	<update id="delete">
+		UPDATE meal_user  SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

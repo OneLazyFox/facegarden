@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.facegarden.modules.diancan.dao.MealOrderDao">
+ 
+	<select id="get" resultType="MealOrder">
+		SELECT
+			a.id,
+			a.user_id AS "userId",
+			a.meal_no AS "mealNo",
+			a.status,
+			a.price,
+			a.payment_status AS "paymentStatus",
+			a.create_date
+		FROM meal_order a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MealOrder">
+		SELECT
+			a.id,
+			a.user_id AS "userId",
+			a.meal_no AS "mealNo",
+			a.status,
+			a.price,
+			a.payment_status AS "paymentStatus",
+			a.create_date
+		FROM meal_order a		
+	</select>
+
+	<insert id="insert">
+		INSERT INTO meal_order(
+			id,
+			user_id,
+			meal_no,
+			status,
+			price,
+			payment_status,
+			create_date
+		) VALUES (
+			#{id}, 
+			#{userId},  
+			#{mealNo},
+			#{status},
+			#{price},
+			#{paymentStatus},
+			now()
+		)
+	</insert>
+	
+	<update id="delete">
+		DELETE FROM meal_order 
+		WHERE id = #{id}
+	</update>
+
+	<update id="update">
+		UPDATE meal_order SET 
+			user_id = #{userId}, 
+			meal_no = #{mealNo},
+			status = #{status},
+			price = #{price},
+			payment_status = #{paymentStatus}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

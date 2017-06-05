@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.facegarden.modules.diancan.dao.MealInfoDao">
+	
+	<!-- 数据定义 -->
+	<sql id="MealInfocolums">
+		a.id,
+		a.meal_name as 'mealName',
+		a.meal_type as 'mealType',
+		a.show_date as 'showDate',
+		a.create_by as 'createBy.id',
+		a.create_date as 'createDate',
+		a.update_by as 'updateBy.id',
+		a.update_date,
+		u1.name as "createBy.name",
+		u2.name as "updateBy.name"
+	</sql>
+	
+	<!-- 关联表 -->
+	<sql id="MealInfoJoins">
+		LEFT JOIN `sys_user` u1 ON a.`create_by`= u1.`id`
+		LEFT JOIN `sys_user` u2 ON a.`update_by`= u2.`id`
+    </sql>
+
+	<!-- 查询id的全部用户 -->
+	<select id="get" resultType="MealInfo">
+		SELECT 
+		  	<include refid="MealInfocolums"/>
+		FROM meal_info a
+		 	<include refid="MealInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="MealInfo">
+		SELECT 
+			<include refid="MealInfocolums"/> 
+		FROM meal_info a 
+		 <include refid="MealInfoJoins"/>
+		WHERE 1=1
+		<if test="id != null and id != ''">
+		   AND id = #{id}
+		</if>
+		<if test="mealName != null and mealName != ''">
+			AND meal_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mealName}||'%'</if>
+					<if test="dbName == 'mysql'">CONCAT('%', #{mealName}, '%')</if>
+		</if>
+		ORDER BY meal_name DESC
+	</select>
+	
+	<!-- 插入数据 -->
+	<insert id="insert">
+		INSERT INTO meal_info(
+			id,
+			meal_name,
+			meal_type,
+			show_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date
+		) VALUES (
+			#{id}, 
+			#{mealName}, 
+			#{mealType}, 
+			#{showDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			NOW()
+		)
+	</insert>
+	
+	<!-- 更新数据 -->
+	<update id="update">
+		UPDATE meal_info SET 
+		    id = #{id},
+			meal_name = #{mealName},
+			meal_type = #{mealType}, 
+			show_date = #{showDate},
+			create_date=#{createDate},
+			update_date = NOW()
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除数据 -->
+	<update id="delete">
+		DELETE FROM  meal_info 
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
